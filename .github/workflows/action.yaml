@@ -1,4 +1,4 @@
-name: 
+name: test
 on:
     push:
         paths: 'terraform/**'
@@ -12,7 +12,18 @@ jobs:
               uses: aws-actions/configure-aws-credentials@v6.1.0
               with:
                 aws-region: "us-east-1"
+                aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+                aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+                aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
 
             - name: Install terraform 
               uses: hashicorp/setup-terraform@v4
+
+            - name: Deploy terraform
+              run: |
+                terraform init
+                terraform plan
+                terraform apply -auto-approve 
+              
+
  
