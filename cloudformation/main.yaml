@@ -1,16 +1,104 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: |
-  Test
-# Parameters:
-#   # Test:
-#   #   Description: Thu nghiep
-#   #   Type: String
-#   #   Default: "Okay 123"
-#   # ParameterName:
-#   #   Description: 
-#   #   Type: AWS::EC2::Instance::Id
-#   #   Default: 
-
+  Devops Lab
+Parameters:
+  VPCCidrBlock:
+    Description: "The IPv4 CIDR block for the VPC"
+    Type: String
+    Default: "10.0.0.0/16"
+  VPCName:
+    Description: "The Name tag for the VPC"
+    Type: String
+    Default: "Devops-VPC"
+  PublicInternetGatewayName:
+    Description: "The Name tag for the Internet Gateway"
+    Type: String
+    Default: "Devops-Internet-Gateway"
+  PublicRouteTableName:
+    Description: "The Name tag for the Public Route Table"
+    Type: String
+    Default: "Public-Route-Table"
+  PublicSubnetCidrBlock:
+    Description: "The IPv4 CIDR block for the Public Subnet"
+    Type: String
+    Default: "10.0.0.0/24"
+  PublicSubnetName:
+    Description: "The Name tag for the Public Subnet"
+    Type: String
+    Default: "Public-Subnet"
+  PublicSecurityGroupName:
+    Description: "The Name tag and Group Name for the Public Security Group"
+    Type: String
+    Default: "Devops-Public-Security-Group"
+  PublicSecurityIngressUserIP:
+    Description: "The specific allowed source IP address (in CIDR format) for SSH and Ping access to the public EC2 instance"
+    Type: String
+    Default: "171.246.207.64/32"
+  KeyPairName:
+    Description: "The name of the EC2 Key Pair to be created"
+    Type: String
+    Default: "Devops-Key-Pair"
+  KeyPairPublicKey:
+    Description: "The SSH public key material (ssh-rsa) used to access the EC2 instances"
+    Type: String
+    Default: >
+      ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDyF0nd30kDBg0SxUCF0nPi14v6Tm3TCTj22pCp2RZ3mzJCyvQ8ToXVoHGf/XOQnEh2cyL52bt0aEbudeBTWwSM3yE78UoUW8odNu00DUtjCTu9Ve2GspLEJl7tE4iveqpAbc0wAmbaTLF54Hmu6F/F/a1W5eZC8Y/JVeU+ewiH0l7oOjnNpFnthd5Oe52oczvllJ5Y7J+TubHNArm6u3vVJ99eNQ1oLL2jEYE+OlNoCwMCxy10nvge1kiMbLpj4b+IHFyfW797OZhrdTEqyS7qt1L/9WFNJq1OHIQEEQR1FJJ/ll14j2ttNKOFNDPySUrk3V7ucR8mgwV3JbkrrG44R5NUs12uScB8UsnyK6T40W4OxO9XJkNM3JkodcWD3lm7XMPphz3f6gCSLda0i2kq66N3g8wQaQlVQz72KeOQ7b2yznVCkr9vSJmOlXOEMWEtD4cDccgsjDwPPcxKIe5jN5VxrcfxjdG5Pql6mzv0TQ9wKbs0PAm+MbgVRe31K8M= v1nh2oz4@vinh-MS-7C52
+  PublicEC2AMI:
+    Description: "The AMI ID to be used for the Public EC2 Instance"
+    Type: String
+    Default: "ami-091138d0f0d41ff90"
+  PublicEC2Name:
+    Description: "The Name tag for the Public EC2 Instance"
+    Type: String
+    Default: "Devops-Public-EC2"
+  PublicEC2PrivateIP:
+    Description: "The static private IP address to be assigned to the Public EC2 Instance"
+    Type: String
+    Default: "10.0.0.4"
+  PublicEC2InstanceType:
+    Description: "The EC2 instance type for the Public EC2 Instance (e.g., t2.micro)"
+    Type: String
+    Default: "t2.micro"
+  PrivateEIPName:
+    Description: "The Name tag for the Elastic IP allocated for the NAT Gateway"
+    Type: String
+    Default: "Devops-Private-EIP"
+  PrivateNatGatewayName:
+    Description: "The Name tag for the Private NAT Gateway"
+    Type: String
+    Default: "Devops-Private-Nat-Gateway"
+  PrivateRouteTableName:
+    Description: "The Name tag for the Private Route Table"
+    Type: String
+    Default: "Private-Route-Table"
+  PrivateSubnetCidrBlock:
+    Description: "The IPv4 CIDR block for the Private Subnet"
+    Type: String
+    Default: "10.0.10.0/24"
+  PrivateSubnetName:
+    Description: "The Name tag for the Private Subnet"
+    Type: String
+    Default: "Private-Subnet"
+  PrivateSecurityGroupName:
+    Description: "The Name tag and Group Name for the Private Security Group"
+    Type: String
+    Default: "Devops-Private-Security-Group"
+  PrivateEC2AMI:
+    Description: "The AMI ID to be used for the Private EC2 Instance"
+    Type: String
+    Default: "ami-091138d0f0d41ff90"
+  PrivateEC2Name:
+    Description: "The Name tag for the Private EC2 Instance"
+    Type: String
+    Default: "Devops-Private-EC2"
+  PrivateEC2PrivateIP:
+    Description: "The static private IP address to be assigned to the Private EC2 Instance"
+    Type: String
+    Default: "10.0.10.8"
+  PrivateEC2InstanceType:
+    Description: "The EC2 instance type for the Private EC2 Instance"
+    Type: String
+    Default: "t2.micro"
 # Mappings:
   
 # Conditions:
@@ -19,18 +107,18 @@ Resources:
   VPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: "10.0.0.0/16"
+      CidrBlock: !Ref VPCCidrBlock
       EnableDnsHostnames: false
       EnableDnsSupport: true
       Tags: 
         - Key: "Name"
-          Value: "Devops-VPC"
+          Value: !Ref VPCName
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags: 
         - Key: "Name"
-          Value: "Devops-Internet-Gateway"
+          Value: !Ref PublicInternetGatewayName
   InternetGatewayVPCAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
@@ -41,7 +129,7 @@ Resources:
     Properties:
       Tags: 
         - Key: "Name"
-          Value: "Public-Route-Table"
+          Value: !Ref PublicRouteTableName
       VpcId: !Ref VPC # Required
   PublicRoute:
     Type: AWS::EC2::Route
@@ -52,11 +140,11 @@ Resources:
   PublicSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      CidrBlock: "10.0.0.0/24"
+      CidrBlock: !Ref PublicSubnetCidrBlock
       MapPublicIpOnLaunch: true
       Tags: 
         - Key: "Name"
-          Value: "Public-Subnet"
+          Value: !Ref PublicSubnetName
       VpcId: !Ref VPC # Required
   PublicSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -66,11 +154,11 @@ Resources:
   PublicSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: "Public Security Group" # Required
-      GroupName: "Devops-Public-Security-Group"
+      GroupDescription: !Ref PublicSecurityGroupName # Required
+      GroupName: !Ref PublicSecurityGroupName
       Tags: 
         - Key: "Name"
-          Value: "Devops-Public-Security-Group"
+          Value: !Ref PublicSecurityGroupName
       VpcId: !Ref VPC
   PublicSecurityGroupEgress:
     Type: AWS::EC2::SecurityGroupEgress
@@ -84,7 +172,7 @@ Resources:
   PublicSecurityGroupIngressSSH:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      CidrIp: "171.246.207.64/32"
+      CidrIp: !Ref PublicSecurityIngressUserIP
       Description: "Allow ssh from user ip"
       FromPort: 22
       GroupId: !Ref PublicSecurityGroup
@@ -93,7 +181,7 @@ Resources:
   PublicSecurityGroupIngressPing:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
-      CidrIp: "171.246.207.64/32"
+      CidrIp: !Ref PublicSecurityIngressUserIP
       Description: "Allow ssh from user ip"
       FromPort: -1
       GroupId: !Ref PublicSecurityGroup
@@ -102,25 +190,24 @@ Resources:
   Keypair:
     Type: AWS::EC2::KeyPair
     Properties:
-      KeyName: "Devops-Key-Pair" # Required
-      PublicKeyMaterial: >
-        ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDyF0nd30kDBg0SxUCF0nPi14v6Tm3TCTj22pCp2RZ3mzJCyvQ8ToXVoHGf/XOQnEh2cyL52bt0aEbudeBTWwSM3yE78UoUW8odNu00DUtjCTu9Ve2GspLEJl7tE4iveqpAbc0wAmbaTLF54Hmu6F/F/a1W5eZC8Y/JVeU+ewiH0l7oOjnNpFnthd5Oe52oczvllJ5Y7J+TubHNArm6u3vVJ99eNQ1oLL2jEYE+OlNoCwMCxy10nvge1kiMbLpj4b+IHFyfW797OZhrdTEqyS7qt1L/9WFNJq1OHIQEEQR1FJJ/ll14j2ttNKOFNDPySUrk3V7ucR8mgwV3JbkrrG44R5NUs12uScB8UsnyK6T40W4OxO9XJkNM3JkodcWD3lm7XMPphz3f6gCSLda0i2kq66N3g8wQaQlVQz72KeOQ7b2yznVCkr9vSJmOlXOEMWEtD4cDccgsjDwPPcxKIe5jN5VxrcfxjdG5Pql6mzv0TQ9wKbs0PAm+MbgVRe31K8M= v1nh2oz4@vinh-MS-7C52
+      KeyName: !Ref KeyPairName # Required
+      PublicKeyMaterial: !Ref KeyPairPublicKey
       Tags: 
         - Key: "Name"
-          Value: "Devops-Key-Pair"
+          Value: !Ref KeyPairName
   PublicEC2:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: "ami-091138d0f0d41ff90"
-      InstanceType: "t2.micro"
+      ImageId: !Ref PublicEC2AMI
+      InstanceType: !Ref PublicEC2InstanceType
       KeyName: !Ref Keypair
-      PrivateIpAddress: "10.0.0.4"
+      PrivateIpAddress: !Ref PublicEC2PrivateIP
       SecurityGroupIds: 
         - !Ref PublicSecurityGroup
       SubnetId: !Ref PublicSubnet
       Tags: 
         - Key: "Name"
-          Value: "Devops-Public-EC2"
+          Value: !Ref PublicEC2Name
 
 
   PrivateEIP:
@@ -128,7 +215,7 @@ Resources:
     Properties:
       Tags: 
         - Key: "Name"
-          Value: "Devops-Private-EIP"
+          Value: !Ref PrivateEIPName
 
   PrivateNatGateway:
     Type: AWS::EC2::NatGateway
@@ -138,7 +225,7 @@ Resources:
       ConnectivityType: "public"
       Tags: 
         - Key: "Name"
-          Value: "Devops-Private-Nat-Gateway"
+          Value: !Ref PrivateNatGatewayName
       VpcId: !Ref VPC 
 
   PrivateRouteTable:
@@ -146,7 +233,7 @@ Resources:
     Properties:
       Tags: 
         - Key: "Name"
-          Value: "Private-Route-Table"
+          Value: !Ref PrivateRouteTableName
       VpcId: !Ref VPC # Required
   PrivateRoute:
     Type: AWS::EC2::Route
@@ -157,10 +244,10 @@ Resources:
   PrivateSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      CidrBlock: "10.0.10.0/24"
+      CidrBlock: !Ref PrivateSubnetCidrBlock
       Tags: 
         - Key: "Name"
-          Value: "Private-Subnet"
+          Value: !Ref PrivateSubnetName
       VpcId: !Ref VPC # Required
   PrivateSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -170,11 +257,11 @@ Resources:
   PrivateSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: "Private Security Group" # Required
-      GroupName: "Devops-Private-Security-Group"
+      GroupDescription: !Ref PrivateSecurityGroupName # Required
+      GroupName: !Ref PrivateSecurityGroupName
       Tags: 
         - Key: "Name"
-          Value: "Devops-Private-Security-Group"
+          Value: !Ref PrivateSecurityGroupName
       VpcId: !Ref VPC
   PrivateSecurityGroupEgress:
     Type: AWS::EC2::SecurityGroupEgress
@@ -207,18 +294,15 @@ Resources:
   PrivateEC2:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: "ami-091138d0f0d41ff90"
-      InstanceType: "t2.micro"
+      ImageId: !Ref PrivateEC2AMI
+      InstanceType: !Ref PrivateEC2InstanceType
       KeyName: !Ref Keypair
-      PrivateIpAddress: "10.0.10.8"
+      PrivateIpAddress: !Ref PrivateEC2PrivateIP
       SecurityGroupIds: 
         - !Ref PrivateSecurityGroup
       SubnetId: !Ref PrivateSubnet
       Tags: 
         - Key: "Name"
-          Value: "Devops-Private-EC2"
+          Value: !Ref PrivateEC2Name
 
-# Transform:
-  
-# Outputs:
 
