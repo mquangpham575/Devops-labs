@@ -2,3 +2,10 @@
 *.tfstate
 *.tfstate.backup
 # *.tfvars
+labsuser.pem
+*.pem
+*.ppk
+.terraform-cache/
+.terraform.d/
+
+baocao.md

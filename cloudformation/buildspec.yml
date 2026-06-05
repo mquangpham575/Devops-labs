@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - echo Installing dependencies...
+      - pip install cfn-lint taskcat
+  pre_build:
+    commands:
+      - echo Running cfn-lint validation...
+      - cfn-lint cloudformation/main.yaml
+  build:
+    commands:
+      - echo Running taskcat tests...
+      - taskcat test run -t cloudformation/main.yaml --regions us-east-1
+  post_build:
+    commands:
+      - echo Build and test phases completed successfully.
+artifacts:
+  files:
+    - cloudformation/main.yaml

@@ -1,0 +1,7 @@
+project:
+  name: devops-lab-1
+  regions:
+    - us-east-1
+tests:
+  lab1-test:
+    template: cloudformation/main.yaml

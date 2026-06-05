@@ -3,26 +3,26 @@ import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 
 def test_aws_infrastructure(region="us-east-1"):
-    print(f"=== Bắt đầu kiểm tra hạ tầng AWS tại region {region} ===")
+    print(f"=== Starting AWS Infrastructure Checks in region {region} ===")
     
     ec2 = boto3.client('ec2', region_name=region)
     success = True
 
-    # 1. Kiểm tra VPC
+    # 1. Check VPC
     try:
         vpcs = ec2.describe_vpcs(Filters=[{'Name': 'tag:Name', 'Values': ['vpc-devops', 'Devops-VPC']}])
         if vpcs['Vpcs']:
             vpc_id = vpcs['Vpcs'][0]['VpcId']
-            print(f"[OK] VPC tìm thấy: {vpc_id} (CIDR: {vpcs['Vpcs'][0]['CidrBlock']})")
+            print(f"[OK] VPC found: {vpc_id} (CIDR: {vpcs['Vpcs'][0]['CidrBlock']})")
         else:
-            print("[FAIL] Không tìm thấy VPC với tag Name 'vpc-devops' hoặc 'Devops-VPC'")
+            print("[FAIL] Could not find VPC with tag Name 'vpc-devops' or 'Devops-VPC'")
             success = False
             return False
     except (BotoCoreError, ClientError) as e:
-        print(f"[ERROR] Lỗi truy vấn VPC: {e}")
+        print(f"[ERROR] Error querying VPC: {e}")
         return False
 
-    # 2. Kiểm tra Subnets
+    # 2. Check Subnets
     try:
         subnets = ec2.describe_subnets(Filters=[{'Name': 'vpc-id', 'Values': [vpc_id]}])
         sub_list = subnets['Subnets']
@@ -30,33 +30,33 @@ def test_aws_infrastructure(region="us-east-1"):
         private_sub = [s for s in sub_list if 'private' in s.get('Tags', [{}])[0].get('Value', '').lower()]
         
         if public_sub:
-            print(f"[OK] Public Subnet tìm thấy: {public_sub[0]['SubnetId']} (CIDR: {public_sub[0]['CidrBlock']})")
+            print(f"[OK] Public Subnet found: {public_sub[0]['SubnetId']} (CIDR: {public_sub[0]['CidrBlock']})")
         else:
-            print("[FAIL] Thiếu Public Subnet")
+            print("[FAIL] Public Subnet missing")
             success = False
             
         if private_sub:
-            print(f"[OK] Private Subnet tìm thấy: {private_sub[0]['SubnetId']} (CIDR: {private_sub[0]['CidrBlock']})")
+            print(f"[OK] Private Subnet found: {private_sub[0]['SubnetId']} (CIDR: {private_sub[0]['CidrBlock']})")
         else:
-            print("[FAIL] Thiếu Private Subnet")
+            print("[FAIL] Private Subnet missing")
             success = False
     except Exception as e:
-        print(f"[ERROR] Lỗi truy vấn Subnets: {e}")
+        print(f"[ERROR] Error querying Subnets: {e}")
         success = False
 
-    # 3. Kiểm tra Internet Gateway
+    # 3. Check Internet Gateway
     try:
         igws = ec2.describe_internet_gateways(Filters=[{'Name': 'attachment.vpc-id', 'Values': [vpc_id]}])
         if igws['InternetGateways']:
             print(f"[OK] Internet Gateway attached: {igws['InternetGateways'][0]['InternetGatewayId']}")
         else:
-            print("[FAIL] Không tìm thấy Internet Gateway attached với VPC")
+            print("[FAIL] Internet Gateway attached to VPC not found")
             success = False
     except Exception as e:
-        print(f"[ERROR] Lỗi truy vấn IGW: {e}")
+        print(f"[ERROR] Error querying IGW: {e}")
         success = False
 
-    # 4. Kiểm tra NAT Gateway
+    # 4. Check NAT Gateway
     try:
         nat_gws = ec2.describe_nat_gateways(Filters=[
             {'Name': 'vpc-id', 'Values': [vpc_id]},
@@ -64,45 +64,44 @@ def test_aws_infrastructure(region="us-east-1"):
         ])
         if nat_gws['NatGateways']:
             nat_gw = nat_gws['NatGateways'][0]
-            print(f"[OK] NAT Gateway hoạt động: {nat_gw['NatGatewayId']} (Subnet: {nat_gw['SubnetId']}, State: {nat_gw['State']})")
+            print(f"[OK] NAT Gateway active: {nat_gw['NatGatewayId']} (Subnet: {nat_gw['SubnetId']}, State: {nat_gw['State']})")
         else:
-            print("[FAIL] Không tìm thấy NAT Gateway đang hoạt động")
+            print("[FAIL] Active NAT Gateway not found")
             success = False
     except Exception as e:
-        print(f"[ERROR] Lỗi truy vấn NAT Gateway: {e}")
+        print(f"[ERROR] Error querying NAT Gateway: {e}")
         success = False
 
-    # 5. Kiểm tra Security Groups
+    # 5. Check Security Groups
     try:
         sgs = ec2.describe_security_groups(Filters=[{'Name': 'vpc-id', 'Values': [vpc_id]}])
         public_sg = [sg for sg in sgs['SecurityGroups'] if 'public' in sg['GroupName'].lower()]
         private_sg = [sg for sg in sgs['SecurityGroups'] if 'private' in sg['GroupName'].lower()]
         
         if public_sg:
-            print(f"[OK] Public Security Group tìm thấy: {public_sg[0]['GroupId']}")
-            # Check SSH port 22 configuration
+            print(f"[OK] Public Security Group found: {public_sg[0]['GroupId']}")
             ssh_allowed = any(
                 perm.get('FromPort') == 22 and perm.get('ToPort') == 22
                 for perm in public_sg[0]['IpPermissions']
             )
             if ssh_allowed:
-                print(f"     -> [OK] Cho phép SSH (Port 22)")
+                print(f"     -> [OK] SSH (Port 22) is allowed")
             else:
-                print(f"     -> [WARNING] Chưa có cấu hình mở port 22 cho SSH")
+                print(f"     -> [WARNING] SSH Port 22 configuration not found")
         else:
-            print("[FAIL] Thiếu Public Security Group")
+            print("[FAIL] Public Security Group missing")
             success = False
 
         if private_sg:
-            print(f"[OK] Private Security Group tìm thấy: {private_sg[0]['GroupId']}")
+            print(f"[OK] Private Security Group found: {private_sg[0]['GroupId']}")
         else:
-            print("[FAIL] Thiếu Private Security Group")
+            print("[FAIL] Private Security Group missing")
             success = False
     except Exception as e:
-        print(f"[ERROR] Lỗi truy vấn Security Groups: {e}")
+        print(f"[ERROR] Error querying Security Groups: {e}")
         success = False
 
-    # 6. Kiểm tra EC2 Instances
+    # 6. Check EC2 Instances
     try:
         instances = ec2.describe_instances(Filters=[
             {'Name': 'vpc-id', 'Values': [vpc_id]},
@@ -116,26 +115,26 @@ def test_aws_infrastructure(region="us-east-1"):
         private_ec2 = [i for i in inst_list if 'private' in i.get('Tags', [{}])[0].get('Value', '').lower()]
         
         if public_ec2:
-            print(f"[OK] Public EC2 Instance tìm thấy: {public_ec2[0]['InstanceId']} (State: {public_ec2[0]['State']['Name']}, IP: {public_ec2[0].get('PublicIpAddress', 'None')})")
+            print(f"[OK] Public EC2 Instance found: {public_ec2[0]['InstanceId']} (State: {public_ec2[0]['State']['Name']}, IP: {public_ec2[0].get('PublicIpAddress', 'None')})")
         else:
-            print("[FAIL] Thiếu Public EC2 Instance")
+            print("[FAIL] Public EC2 Instance missing")
             success = False
             
         if private_ec2:
-            print(f"[OK] Private EC2 Instance tìm thấy: {private_ec2[0]['InstanceId']} (State: {private_ec2[0]['State']['Name']}, IP: {private_ec2[0].get('PrivateIpAddress', 'None')})")
+            print(f"[OK] Private EC2 Instance found: {private_ec2[0]['InstanceId']} (State: {private_ec2[0]['State']['Name']}, IP: {private_ec2[0].get('PrivateIpAddress', 'None')})")
         else:
-            print("[FAIL] Thiếu Private EC2 Instance")
+            print("[FAIL] Private EC2 Instance missing")
             success = False
     except Exception as e:
-        print(f"[ERROR] Lỗi truy vấn EC2 Instances: {e}")
+        print(f"[ERROR] Error querying EC2 Instances: {e}")
         success = False
 
-    print("\n=== KẾT QUẢ KIỂM TRA ===")
+    print("\n=== VERIFICATION RESULTS ===")
     if success:
-        print("[SUCCESS] Tất cả dịch vụ được cấu hình chính xác theo đặc tả của Lab 1!")
+        print("[SUCCESS] All resources are correctly configured according to Lab 1 requirements!")
         return True
     else:
-        print("[FAILED] Một số dịch vụ chưa được cấu hình hoặc cấu hình sai.")
+        print("[FAILED] Some resources are missing or incorrectly configured.")
         return False
 
 if __name__ == "__main__":

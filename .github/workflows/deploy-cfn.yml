@@ -1,0 +1,48 @@
+name: Deploy CloudFormation Stack to AWS
+
+on:
+  push:
+    paths:
+      - 'cloudformation/**'
+  workflow_dispatch:
+
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Linting & Testing Tools
+        run: |
+          pip install cfn-lint taskcat
+
+      - name: Run cfn-lint Validation
+        run: |
+          cfn-lint cloudformation/main.yaml
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: Run Taskcat Integration Tests
+        run: |
+          taskcat test run -t cloudformation/main.yaml --regions us-east-1
+
+      - name: Deploy CloudFormation Stack
+        uses: aws-actions/aws-cloudformation-github-deploy@v2
+        with:
+          name: Devops-Lab1-Stack
+          template: cloudformation/main.yaml
+          no-fail-on-empty-changeset: "1"
+          capabilities: CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND
+          role-arn: arn:aws:iam::568004971730:role/LabRole

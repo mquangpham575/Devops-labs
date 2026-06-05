@@ -1,5 +1,9 @@
-provider "aws" {
-  region = "us-east-1"
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+    }
+  }
 }
 
 resource "aws_vpc" "vpc-devops" {
@@ -36,6 +40,22 @@ resource "aws_vpc_security_group_ingress_rule" "public-inbound-public-ping" {
   ip_protocol = "icmp"
   from_port = -1
   to_port = -1
+}
+
+resource "aws_vpc_security_group_ingress_rule" "public-inbound-http" {
+  security_group_id = aws_security_group.public-security-group-devops.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "tcp"
+  from_port         = 80
+  to_port           = 80
+}
+
+resource "aws_vpc_security_group_ingress_rule" "public-inbound-nodeport" {
+  security_group_id = aws_security_group.public-security-group-devops.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "tcp"
+  from_port         = 30000
+  to_port           = 30000
 }
 
 resource "aws_internet_gateway" "internet_gateway-devops" {

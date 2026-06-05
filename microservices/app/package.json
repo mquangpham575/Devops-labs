@@ -1,0 +1,13 @@
+{
+  "name": "devops-microservice",
+  "version": "1.0.0",
+  "description": "Minimal Node.js microservice for DevSecOps Lab 2 Part 3",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Running dummy tests...\" && exit 0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
