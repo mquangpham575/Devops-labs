@@ -50,11 +50,6 @@ resource "aws_route_table" "public-route-table" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.internet_gateway-devops.id
   }
-
-  route {
-    cidr_block = aws_vpc.vpc-devops.cidr_block
-    gateway_id = "local"
-  }
 }
 
 resource "aws_subnet" "public-subnet-devops" {
@@ -98,13 +93,21 @@ resource "aws_key_pair" "key-pair-devops" {
 #   security_groups = [aws_security_group.public-security-group-devops.id]
 # }
 
+resource "aws_eip" "nat-eip" {
+  domain = "vpc"
+  tags = {
+    Name = "eip-${var.nat-gateway-name}"
+  }
+}
+
 resource "aws_nat_gateway" "nat-private-devops" {
+  allocation_id = aws_eip.nat-eip.id
+  subnet_id     = aws_subnet.public-subnet-devops.id
+  connectivity_type = "public"
+
   tags = {
     Name = var.nat-gateway-name
   }
-  availability_mode = "regional"
-  connectivity_type = "public"
-  vpc_id = aws_vpc.vpc-devops.id
 }
 
 resource "aws_route_table" "private-route-table" {
@@ -114,11 +117,6 @@ resource "aws_route_table" "private-route-table" {
   route {
     cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat-private-devops.id
-  }
-
-  route {
-    cidr_block = aws_vpc.vpc-devops.cidr_block
-    gateway_id = "local"
   }
 }
 
