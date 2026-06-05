@@ -12,8 +12,23 @@ def test_aws_infrastructure(region="us-east-1"):
     try:
         vpcs = ec2.describe_vpcs(Filters=[{'Name': 'tag:Name', 'Values': ['vpc-devops', 'Devops-VPC']}])
         if vpcs['Vpcs']:
-            vpc_id = vpcs['Vpcs'][0]['VpcId']
-            print(f"[OK] VPC found: {vpc_id} (CIDR: {vpcs['Vpcs'][0]['CidrBlock']})")
+            vpc_id = None
+            vpc_cidr = None
+            for v in vpcs['Vpcs']:
+                instances = ec2.describe_instances(Filters=[
+                    {'Name': 'vpc-id', 'Values': [v['VpcId']]},
+                    {'Name': 'tag:Name', 'Values': ['public-ec2-devops', 'Devops-Public-EC2']}
+                ])
+                if any(r['Instances'] for r in instances['Reservations']):
+                    vpc_id = v['VpcId']
+                    vpc_cidr = v['CidrBlock']
+                    break
+            
+            if not vpc_id:
+                vpc_id = vpcs['Vpcs'][0]['VpcId']
+                vpc_cidr = vpcs['Vpcs'][0]['CidrBlock']
+                
+            print(f"[OK] VPC found: {vpc_id} (CIDR: {vpc_cidr})")
         else:
             print("[FAIL] Could not find VPC with tag Name 'vpc-devops' or 'Devops-VPC'")
             success = False
@@ -26,8 +41,14 @@ def test_aws_infrastructure(region="us-east-1"):
     try:
         subnets = ec2.describe_subnets(Filters=[{'Name': 'vpc-id', 'Values': [vpc_id]}])
         sub_list = subnets['Subnets']
-        public_sub = [s for s in sub_list if 'public' in s.get('Tags', [{}])[0].get('Value', '').lower()]
-        private_sub = [s for s in sub_list if 'private' in s.get('Tags', [{}])[0].get('Value', '').lower()]
+        public_sub = []
+        private_sub = []
+        for s in sub_list:
+            name_tag = next((t.get('Value', '') for t in s.get('Tags', []) if t.get('Key') == 'Name'), '')
+            if 'public' in name_tag.lower():
+                public_sub.append(s)
+            elif 'private' in name_tag.lower():
+                private_sub.append(s)
         
         if public_sub:
             print(f"[OK] Public Subnet found: {public_sub[0]['SubnetId']} (CIDR: {public_sub[0]['CidrBlock']})")
@@ -111,8 +132,14 @@ def test_aws_infrastructure(region="us-east-1"):
         for r in instances['Reservations']:
             inst_list.extend(r['Instances'])
             
-        public_ec2 = [i for i in inst_list if 'public' in i.get('Tags', [{}])[0].get('Value', '').lower()]
-        private_ec2 = [i for i in inst_list if 'private' in i.get('Tags', [{}])[0].get('Value', '').lower()]
+        public_ec2 = []
+        private_ec2 = []
+        for i in inst_list:
+            name_tag = next((t.get('Value', '') for t in i.get('Tags', []) if t.get('Key') == 'Name'), '')
+            if 'public' in name_tag.lower():
+                public_ec2.append(i)
+            elif 'private' in name_tag.lower():
+                private_ec2.append(i)
         
         if public_ec2:
             print(f"[OK] Public EC2 Instance found: {public_ec2[0]['InstanceId']} (State: {public_ec2[0]['State']['Name']}, IP: {public_ec2[0].get('PublicIpAddress', 'None')})")
