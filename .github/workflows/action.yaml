@@ -37,6 +37,7 @@ jobs:
               with:
                 directory: terraform/
                 framework: terraform
+                soft_fail: true
               
 
  

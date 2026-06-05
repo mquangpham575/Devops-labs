@@ -44,7 +44,7 @@ Parameters:
     Default: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCpfQ74yUjx0V4B9ZA/gef5K+4SnK2BwnY/Ii7vuc5iXZ0mPp67BalDtnN3Mo4GaODm/9pBl0bZPkHi0TUErMXSksa2zymTVx4YNR2tRAFOLw45PzhQ44lx3TWDAntrfA5GgUMki6f93yoaRQ2tY+Ez2BpaCMxdF/xlqQSmUWmv4wg+nf2XcvXU2dhSwn8Xtt+BCVSScB0xF/f8CgxE7kQEFyJqZ7aJEBrSRWVEXRRubE2s4M7Y/GsR0uyHUrkPZxIGJ4/UsqC7XlB9gDX7fhspnrmgrsQfYPM3G/VRKNodatTomR9t88tU9e+oMczdsotE+yaHWS06PrIP1K62QAPl"
   PublicEC2AMI:
     Description: "The AMI ID to be used for the Public EC2 Instance"
-    Type: String
+    Type: AWS::EC2::Image::Id
     Default: "ami-091138d0f0d41ff90"
   PublicEC2Name:
     Description: "The Name tag for the Public EC2 Instance"
@@ -84,7 +84,7 @@ Parameters:
     Default: "Devops-Private-Security-Group"
   PrivateEC2AMI:
     Description: "The AMI ID to be used for the Private EC2 Instance"
-    Type: String
+    Type: AWS::EC2::Image::Id
     Default: "ami-091138d0f0d41ff90"
   PrivateEC2Name:
     Description: "The Name tag for the Private EC2 Instance"
@@ -164,10 +164,8 @@ Resources:
     Properties:
       CidrIp: "0.0.0.0/0"
       Description: "Allow all egress"
-      FromPort: -1
       GroupId: !Ref PublicSecurityGroup # Required
       IpProtocol: "-1" # Required
-      ToPort: -1
   PublicSecurityGroupIngressSSH:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
@@ -266,10 +264,8 @@ Resources:
     Properties:
       CidrIp: "0.0.0.0/0"
       Description: "Allow all egress"
-      FromPort: -1
       GroupId: !Ref PrivateSecurityGroup # Required
       IpProtocol: "-1" # Required
-      ToPort: -1
   PrivateSecurityGroupIngressSSH:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
