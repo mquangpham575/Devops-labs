@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies and Run Tests
         run: |
           cd microservices/app
-          npm ci
+          npm install
           npm test
 
       - name: SonarCloud Quality Scan
