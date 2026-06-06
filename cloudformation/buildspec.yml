@@ -1,23 +1,28 @@
 version: 0.2
-
 phases:
   install:
     runtime-versions:
-      python: 3.11
+      python: 3.10
     commands:
-      - echo Installing dependencies...
-      - pip install cfn-lint taskcat
+      - pip install --upgrade pip
+      - pip install pipx
+      - pipx ensurepath
+      - export PATH=$PATH:/root/.local/bin
+      # Hạ cấp setuptools để PyYAML 5.4.1 (của taskcat) có thể build được
+      # 
+      - echo Installing cfn-lint and taskcat 
+      - pipx install cfn-lint
+      - PIPX_DEFAULT_PYTHON=python3.10 pipx install taskcat --pip-args="setuptools<58.0.0 wheel"
+
   pre_build:
     commands:
-      - echo Running cfn-lint validation...
-      - cfn-lint cloudformation/main.yaml
+      - echo Running static check
+      - cfn-lint main.yaml
+
   build:
     commands:
-      - echo Running taskcat tests...
-      - taskcat test run -t cloudformation/main.yaml --regions us-east-1
-  post_build:
-    commands:
-      - echo Build and test phases completed successfully.
+      - taskcat test run
+
 artifacts:
   files:
-    - cloudformation/main.yaml
+    - main.yaml

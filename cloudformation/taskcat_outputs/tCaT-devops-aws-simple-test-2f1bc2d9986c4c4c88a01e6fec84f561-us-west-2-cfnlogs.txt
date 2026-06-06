@@ -1,0 +1,90 @@
+-----------------------------------------------------------------------------
+Region: us-west-2
+StackName: tCaT-devops-aws-simple-test-2f1bc2d9986c4c4c88a01e6fec84f561
+*****************************************************************************
+ResourceStatusReason:  
+Stack launch was successful
+*****************************************************************************
+*****************************************************************************
+Events:  
+TimeStamp                         ResourceStatus      ResourceType                           LogicalResourceId                                             ResourceStatusReason
+--------------------------------  ------------------  -------------------------------------  ------------------------------------------------------------  ---------------------------
+2026-06-05 06:54:20.648000+00:00  CREATE_COMPLETE     AWS::CloudFormation::Stack             tCaT-devops-aws-simple-test-2f1bc2d9986c4c4c88a01e6fec84f561
+2026-06-05 06:54:19.933000+00:00  CREATE_COMPLETE     AWS::EC2::Route                        PrivateRoute
+2026-06-05 06:54:19.459000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Route                        PrivateRoute                                                  Resource creation Initiated
+2026-06-05 06:54:18.445000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Route                        PrivateRoute
+2026-06-05 06:54:18.051000+00:00  CREATE_COMPLETE     AWS::EC2::NatGateway                   PrivateNatGateway
+2026-06-05 06:53:11.239000+00:00  CREATE_COMPLETE     AWS::EC2::Instance                     PrivateEC2
+2026-06-05 06:53:11.168000+00:00  CREATE_COMPLETE     AWS::EC2::Instance                     PublicEC2
+2026-06-05 06:53:09.121000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroupEgress          PrivateSecurityGroupEgress
+2026-06-05 06:53:09.084000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroupEgress          PublicSecurityGroupEgress
+2026-06-05 06:53:08.648000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupEgress          PrivateSecurityGroupEgress                                    Resource creation Initiated
+2026-06-05 06:53:08.588000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupEgress          PublicSecurityGroupEgress                                     Resource creation Initiated
+2026-06-05 06:53:02.518000+00:00  CREATE_COMPLETE     AWS::EC2::SubnetRouteTableAssociation  PublicSubnetRouteTableAssociation
+2026-06-05 06:53:02.384000+00:00  CREATE_COMPLETE     AWS::EC2::SubnetRouteTableAssociation  PrivateSubnetRouteTableAssociation
+2026-06-05 06:53:02.030000+00:00  CREATE_COMPLETE     AWS::EC2::Route                        PublicRoute
+2026-06-05 06:53:02.017000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SubnetRouteTableAssociation  PublicSubnetRouteTableAssociation                             Resource creation Initiated
+2026-06-05 06:53:01.837000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SubnetRouteTableAssociation  PrivateSubnetRouteTableAssociation                            Resource creation Initiated
+2026-06-05 06:53:01.532000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Route                        PublicRoute                                                   Resource creation Initiated
+2026-06-05 06:53:00.522000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SubnetRouteTableAssociation  PrivateSubnetRouteTableAssociation
+2026-06-05 06:53:00.459000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SubnetRouteTableAssociation  PublicSubnetRouteTableAssociation
+2026-06-05 06:53:00.452000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Route                        PublicRoute
+2026-06-05 06:53:00.165000+00:00  CREATE_COMPLETE     AWS::EC2::RouteTable                   PrivateRouteTable
+2026-06-05 06:53:00.084000+00:00  CREATE_COMPLETE     AWS::EC2::RouteTable                   PublicRouteTable
+2026-06-05 06:52:59.147000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance                     PublicEC2                                                     Resource creation Initiated
+2026-06-05 06:52:59.130000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance                     PrivateEC2                                                    Resource creation Initiated
+2026-06-05 06:52:58.689000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroupIngress         PrivateSecurityGroupIngressSSH
+2026-06-05 06:52:58.675000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroupIngress         PrivateSecurityGroupIngressPing
+2026-06-05 06:52:58.664000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroupIngress         PublicSecurityGroupIngressPing
+2026-06-05 06:52:58.624000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroupIngress         PublicSecurityGroupIngressSSH
+2026-06-05 06:52:58.141000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupIngress         PublicSecurityGroupIngressPing                                Resource creation Initiated
+2026-06-05 06:52:58.055000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupIngress         PrivateSecurityGroupIngressPing                               Resource creation Initiated
+2026-06-05 06:52:58.035000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupIngress         PrivateSecurityGroupIngressSSH                                Resource creation Initiated
+2026-06-05 06:52:57.998000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupIngress         PublicSecurityGroupIngressSSH                                 Resource creation Initiated
+2026-06-05 06:52:57.190000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupIngress         PrivateSecurityGroupIngressPing
+2026-06-05 06:52:57.189000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance                     PublicEC2
+2026-06-05 06:52:57.187000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupIngress         PublicSecurityGroupIngressSSH
+2026-06-05 06:52:57.187000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupIngress         PrivateSecurityGroupIngressSSH
+2026-06-05 06:52:57.178000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupEgress          PublicSecurityGroupEgress
+2026-06-05 06:52:57.173000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupIngress         PublicSecurityGroupIngressPing
+2026-06-05 06:52:57.149000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroupEgress          PrivateSecurityGroupEgress
+2026-06-05 06:52:57.136000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Instance                     PrivateEC2
+2026-06-05 06:52:56.821000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroup                PublicSecurityGroup
+2026-06-05 06:52:56.771000+00:00  CREATE_COMPLETE     AWS::EC2::SecurityGroup                PrivateSecurityGroup
+2026-06-05 06:52:54.745000+00:00  CREATE_COMPLETE     AWS::EC2::VPCGatewayAttachment         InternetGatewayVPCAttachment
+2026-06-05 06:52:54.443000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NatGateway                   PrivateNatGateway                                             Resource creation Initiated
+2026-06-05 06:52:53.419000+00:00  CREATE_IN_PROGRESS  AWS::EC2::NatGateway                   PrivateNatGateway
+2026-06-05 06:52:53.033000+00:00  CREATE_IN_PROGRESS  AWS::EC2::VPCGatewayAttachment         InternetGatewayVPCAttachment                                  Resource creation Initiated
+2026-06-05 06:52:52.684000+00:00  CREATE_COMPLETE     AWS::EC2::Subnet                       PublicSubnet
+2026-06-05 06:52:52.408000+00:00  CREATE_COMPLETE     AWS::EC2::Subnet                       PrivateSubnet
+2026-06-05 06:52:52.351000+00:00  CREATE_COMPLETE     AWS::EC2::EIP                          PrivateEIP
+2026-06-05 06:52:52.315000+00:00  CREATE_IN_PROGRESS  AWS::EC2::VPCGatewayAttachment         InternetGatewayVPCAttachment
+2026-06-05 06:52:51.942000+00:00  CREATE_COMPLETE     AWS::EC2::InternetGateway              InternetGateway
+2026-06-05 06:52:50.787000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroup                PrivateSecurityGroup                                          Resource creation Initiated
+2026-06-05 06:52:50.741000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroup                PublicSecurityGroup                                           Resource creation Initiated
+2026-06-05 06:52:49.509000+00:00  CREATE_IN_PROGRESS  AWS::EC2::RouteTable                   PrivateRouteTable                                             Resource creation Initiated
+2026-06-05 06:52:49.469000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PublicSubnet                                                  Resource creation Initiated
+2026-06-05 06:52:49.362000+00:00  CREATE_IN_PROGRESS  AWS::EC2::RouteTable                   PublicRouteTable                                              Resource creation Initiated
+2026-06-05 06:52:49.345000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PrivateSubnet                                                 Resource creation Initiated
+2026-06-05 06:52:48.486000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PublicSubnet
+2026-06-05 06:52:48.484000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroup                PublicSecurityGroup
+2026-06-05 06:52:48.470000+00:00  CREATE_IN_PROGRESS  AWS::EC2::Subnet                       PrivateSubnet
+2026-06-05 06:52:48.465000+00:00  CREATE_IN_PROGRESS  AWS::EC2::RouteTable                   PrivateRouteTable
+2026-06-05 06:52:48.454000+00:00  CREATE_IN_PROGRESS  AWS::EC2::SecurityGroup                PrivateSecurityGroup
+2026-06-05 06:52:48.446000+00:00  CREATE_IN_PROGRESS  AWS::EC2::RouteTable                   PublicRouteTable
+2026-06-05 06:52:48.103000+00:00  CREATE_COMPLETE     AWS::EC2::VPC                          VPC
+2026-06-05 06:52:36.594000+00:00  CREATE_IN_PROGRESS  AWS::EC2::EIP                          PrivateEIP                                                    Resource creation Initiated
+2026-06-05 06:52:36.570000+00:00  CREATE_COMPLETE     AWS::EC2::KeyPair                      Keypair
+2026-06-05 06:52:36.377000+00:00  CREATE_IN_PROGRESS  AWS::EC2::VPC                          VPC                                                           Resource creation Initiated
+2026-06-05 06:52:36.186000+00:00  CREATE_IN_PROGRESS  AWS::EC2::InternetGateway              InternetGateway                                               Resource creation Initiated
+2026-06-05 06:52:36.095000+00:00  CREATE_IN_PROGRESS  AWS::EC2::KeyPair                      Keypair                                                       Resource creation Initiated
+2026-06-05 06:52:35.180000+00:00  CREATE_IN_PROGRESS  AWS::EC2::KeyPair                      Keypair
+2026-06-05 06:52:35.174000+00:00  CREATE_IN_PROGRESS  AWS::EC2::VPC                          VPC
+2026-06-05 06:52:35.169000+00:00  CREATE_IN_PROGRESS  AWS::EC2::InternetGateway              InternetGateway
+2026-06-05 06:52:35.139000+00:00  CREATE_IN_PROGRESS  AWS::EC2::EIP                          PrivateEIP
+2026-06-05 06:52:33.034000+00:00  CREATE_IN_PROGRESS  AWS::CloudFormation::Stack             tCaT-devops-aws-simple-test-2f1bc2d9986c4c4c88a01e6fec84f561  User Initiated
+*****************************************************************************
+-----------------------------------------------------------------------------
+Tested on: Friday, 05. June 2026 01:55PM
+-----------------------------------------------------------------------------
+

@@ -1,0 +1,14 @@
+# .taskcat.yml
+project:
+  name: devops-aws
+  regions:
+    - us-east-1
+    - ap-southeast-2
+
+tests:
+  simple-test:
+    template: main.yaml
+    parameters:
+    # random key name each test
+      KeyPairName: $[taskcat_current_region] 
+  
