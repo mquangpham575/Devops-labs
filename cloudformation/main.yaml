@@ -1,4 +1,3 @@
-# Clean deploy
 AWSTemplateFormatVersion: 2010-09-09
 Description: |
   Devops Lab
@@ -34,7 +33,7 @@ Parameters:
   PublicSecurityIngressUserIP:
     Description: "The specific allowed source IP address (in CIDR format) for SSH and Ping access to the public EC2 instance"
     Type: String
-    Default: "171.246.207.64/32"
+    Default: "115.73.227.29/32"
   KeyPairName:
     Description: "The name of the EC2 Key Pair to be created"
     Type: String
@@ -42,11 +41,12 @@ Parameters:
   KeyPairPublicKey:
     Description: "The SSH public key material (ssh-rsa) used to access the EC2 instances"
     Type: String
-    Default: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCpfQ74yUjx0V4B9ZA/gef5K+4SnK2BwnY/Ii7vuc5iXZ0mPp67BalDtnN3Mo4GaODm/9pBl0bZPkHi0TUErMXSksa2zymTVx4YNR2tRAFOLw45PzhQ44lx3TWDAntrfA5GgUMki6f93yoaRQ2tY+Ez2BpaCMxdF/xlqQSmUWmv4wg+nf2XcvXU2dhSwn8Xtt+BCVSScB0xF/f8CgxE7kQEFyJqZ7aJEBrSRWVEXRRubE2s4M7Y/GsR0uyHUrkPZxIGJ4/UsqC7XlB9gDX7fhspnrmgrsQfYPM3G/VRKNodatTomR9t88tU9e+oMczdsotE+yaHWS06PrIP1K62QAPl"
+    Default: >
+      ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDyF0nd30kDBg0SxUCF0nPi14v6Tm3TCTj22pCp2RZ3mzJCyvQ8ToXVoHGf/XOQnEh2cyL52bt0aEbudeBTWwSM3yE78UoUW8odNu00DUtjCTu9Ve2GspLEJl7tE4iveqpAbc0wAmbaTLF54Hmu6F/F/a1W5eZC8Y/JVeU+ewiH0l7oOjnNpFnthd5Oe52oczvllJ5Y7J+TubHNArm6u3vVJ99eNQ1oLL2jEYE+OlNoCwMCxy10nvge1kiMbLpj4b+IHFyfW797OZhrdTEqyS7qt1L/9WFNJq1OHIQEEQR1FJJ/ll14j2ttNKOFNDPySUrk3V7ucR8mgwV3JbkrrG44R5NUs12uScB8UsnyK6T40W4OxO9XJkNM3JkodcWD3lm7XMPphz3f6gCSLda0i2kq66N3g8wQaQlVQz72KeOQ7b2yznVCkr9vSJmOlXOEMWEtD4cDccgsjDwPPcxKIe5jN5VxrcfxjdG5Pql6mzv0TQ9wKbs0PAm+MbgVRe31K8M= v1nh2oz4@vinh-MS-7C52
   PublicEC2AMI:
-    Description: "The AMI ID to be used for the Public EC2 Instance"
-    Type: AWS::EC2::Image::Id
-    Default: "ami-091138d0f0d41ff90"
+      Description: "The AMI ID to be used for the Public EC2 Instance"
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+      Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64'
   PublicEC2Name:
     Description: "The Name tag for the Public EC2 Instance"
     Type: String
@@ -58,7 +58,7 @@ Parameters:
   PublicEC2InstanceType:
     Description: "The EC2 instance type for the Public EC2 Instance (e.g., t2.micro)"
     Type: String
-    Default: "t2.micro"
+    Default: "t3.micro"
   PrivateEIPName:
     Description: "The Name tag for the Elastic IP allocated for the NAT Gateway"
     Type: String
@@ -85,8 +85,8 @@ Parameters:
     Default: "Devops-Private-Security-Group"
   PrivateEC2AMI:
     Description: "The AMI ID to be used for the Private EC2 Instance"
-    Type: AWS::EC2::Image::Id
-    Default: "ami-091138d0f0d41ff90"
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64'
   PrivateEC2Name:
     Description: "The Name tag for the Private EC2 Instance"
     Type: String
@@ -98,7 +98,7 @@ Parameters:
   PrivateEC2InstanceType:
     Description: "The EC2 instance type for the Private EC2 Instance"
     Type: String
-    Default: "t2.micro"
+    Default: "t3.micro"
 # Mappings:
   
 # Conditions:
@@ -138,14 +138,16 @@ Resources:
       GatewayId: !Ref InternetGateway
       RouteTableId: !Ref PublicRouteTable # Required
   PublicSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      CidrBlock: !Ref PublicSubnetCidrBlock
-      MapPublicIpOnLaunch: true
-      Tags: 
-        - Key: "Name"
-          Value: !Ref PublicSubnetName
-      VpcId: !Ref VPC # Required
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref VPC
+        CidrBlock: !Ref PublicSubnetCidrBlock
+        MapPublicIpOnLaunch: true
+        AvailabilityZone: !Select [ 0, !GetAZs '' ]
+        Tags: 
+          - Key: "Name"
+            Value: !Ref PublicSubnetName
+
   PublicSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -186,13 +188,16 @@ Resources:
       IpProtocol: "icmp" # Required
       ToPort: -1
   Keypair:
-    Type: AWS::EC2::KeyPair
-    Properties:
-      KeyName: !Ref KeyPairName # Required
-      PublicKeyMaterial: !Ref KeyPairPublicKey
-      Tags: 
-        - Key: "Name"
-          Value: !Ref KeyPairName
+      Type: AWS::EC2::KeyPair
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
+      Properties:
+        # Sử dụng !Sub để tạo tên duy nhất: Tên_ngẫu_nhiên-Tên_Stack
+        KeyName: !Sub "${KeyPairName}-${AWS::StackName}" 
+        PublicKeyMaterial: !Ref KeyPairPublicKey
+        Tags: 
+          - Key: "Name"
+            Value: !Ref KeyPairName
   PublicEC2:
     Type: AWS::EC2::Instance
     Properties:
@@ -217,13 +222,14 @@ Resources:
 
   PrivateNatGateway:
     Type: AWS::EC2::NatGateway
-    Properties:
+    Properties: 
+      SubnetId: !Ref PublicSubnet
       AllocationId: !GetAtt PrivateEIP.AllocationId
       ConnectivityType: "public"
-      SubnetId: !Ref PublicSubnet
       Tags: 
         - Key: "Name"
           Value: !Ref PrivateNatGatewayName
+
 
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
@@ -241,11 +247,13 @@ Resources:
   PrivateSubnet:
     Type: AWS::EC2::Subnet
     Properties:
+      VpcId: !Ref VPC
       CidrBlock: !Ref PrivateSubnetCidrBlock
+      # Ép Private Subnet cùng AZ với Public để NAT Gateway hoạt động được
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
       Tags: 
         - Key: "Name"
           Value: !Ref PrivateSubnetName
-      VpcId: !Ref VPC # Required
   PrivateSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
